@@ -12,11 +12,11 @@ from pymc import Interpolated
 from aje.stats.distributions.cls.cds import cds
 from aje.stats.distributions.pytensor_methods.cds import logpdf, logcdf
 
-__all__ = ["GenExtremeWeibull", "GenExtreme", "CDStats", "pm_from_posterior"]
+__all__ = ["GenExtremeWeibull", "GenExtreme", "CDStats", "from_posterior"]
 
-def pm_from_posterior(param, samples, lower = None, upper = None, npts = 100):
+def from_posterior(param, samples, lower = None, upper = None, npts = 100):
     """
-    pm_from_posterior
+    from_posterior
 
     Estimate a distribution using Kernel Density Estimate (KDE).
     Useful for updating prior or other cases when no analytical solution is known.
