@@ -488,7 +488,7 @@ cdstats = CDStatsRV()
 
 class CDStats(Continuous):
     """
-    Cumulative Distribution Statistics Distribution. After Caprani, C.C. (2005).
+    Composite Distribution Statistics Distribution. After Caprani, C.C. (2005).
     With E, zb, and xi parameterization.
     """
     rv_op = cdstats

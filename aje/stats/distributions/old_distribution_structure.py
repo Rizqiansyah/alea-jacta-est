@@ -13,7 +13,7 @@ from scipy.stats import genextreme, uniform
 from scipy.stats import beta as scipy_beta_dist
 from scipy import special
 
-__all__ = ["gentruncated", "genmaxima", "genextreme_weibull", "mixturedistribution", "multimodalbeta"]
+__all__ = ["gentruncated", "genmaxima", "genextreme_weibull", "beta", "mixturedistribution", "multimodalbeta"]
 
 #=======================================
 #         gentruncated() class
@@ -993,6 +993,85 @@ genextreme_WR = genextreme_weibull
 legacy class name of Genextreme with Weibull domain of attraction. 
 This is the same as calling genextreme_weibull.
 """
+
+
+from scipy.stats import beta as beta_dist
+
+def beta(a=None, b=None, mode=None, cov=None, loc=0.0, scale=1.0):
+    """
+    Beta distribution.
+    Allows 2 paramterization:
+        - (alpha, beta) -  this is the common shape parameterization
+        - (mode, cov) - Parameterize based on the mode and coefficient of variation
+
+    Arguments:
+    ----------
+    a: float
+        alpha parameter
+    b: float
+        beta parameter
+    mode: float
+        mode of the distribution
+    cov: float
+        coefficient of variation
+    loc: float
+        location parameter. Default 0.0.
+    scale: float
+        scale parameter. Default 1.0.
+        
+    Notes:
+    ------
+    Either alpha and beta must be supplied together, or mode and cov must be supplied together, but not both.
+
+    For the (mode, cov) parameterization, loc < mode < scale+loc.
+    The distribution only admits the unimodal case, i.e. alpha, beta > 1.
+
+    """
+    # Check that alpha and beta are in pair
+    if a is not None or b is not None:
+        if b is None and a is None:
+            raise ValueError("alpha and beta must be supplied together")
+        if mode is not None or cov is not None:
+            raise ValueError("Only one of (alpha, beta) or (mode, cov) must be supplied")
+        else:
+            return beta_dist(a, b, loc=loc, scale=scale)
+    elif mode is not None or cov is not None:
+        if cov is None and mode is None:
+            raise ValueError("mode and cov must be supplied together")
+        if a is not None or b is not None:
+            raise ValueError("Only one of (alpha, beta) or (mode, cov) must be supplied")
+        else:
+            if cov <= 0:
+                raise ValueError("cov must be positive")
+            if mode <= loc or mode >= scale + loc:
+                raise ValueError("mode must be within the support")
+            
+            C = cov
+            M = mode
+            s = scale
+            t = loc
+
+            a3 = - s*(C*M)**2/(t-M)**3
+
+            a2_num = C**2*M*(M * (-3*M - t + s) + 2*t * (s + 2*t)) + (t-M)**2*(t-M + s)
+            a2_denom = (t-M)**3
+            a2 = a2_num/a2_denom
+
+            a1_nom = -(2*(t-M) + s)* (C**2*t * (2*M* (2*t-3*M + s) + t*(s + 2*t)) + s*(t-M)**2)
+            a1_denom = s*(t-M)**3
+            a1 = a1_nom / a1_denom
+
+            a0_num = (C*t)**2 * ( 3*(t-M) + s) * (2*(t-M) + s)**2
+            a0_denom = (s**2*(t-M)**3)
+            a0 = a0_num/a0_denom
+
+            a = np.roots([a3, a2, a1, a0])
+            a = np.max(a[np.isreal(a)])
+            b = (s*(a-1) - (M-t)*(a-2)) / (M-t)
+
+            return beta_dist(a, b, loc=loc, scale=scale)
+
+
 
 class mixturedistribution():
     """
