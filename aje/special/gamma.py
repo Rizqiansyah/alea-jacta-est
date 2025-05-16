@@ -32,7 +32,7 @@ def gammainv_approx(y: float | List[float]) -> tuple[float, float] | tuple[List[
     \[
         x = \begin{cases}
             \frac{1}{y}, & y \geq 1                                                                [2]\\
-            \frac{1}{2} - \frac{\log(y/\sqrt{2\pi})}{W(-e^{-1}\log(y/\sqrt{2\pi}))}, & y < 1       [1]
+            \alpha - \sqrt{\frac{2(y-\Gamma(\alpha))}{\psi(\alpha)\Gamma(\alpha)}},  & y < 1       [1]
         \end{cases}
     \]
     For $x>\alpha$, 
@@ -58,7 +58,8 @@ def gammainv_approx(y: float | List[float]) -> tuple[float, float] | tuple[List[
     second_soln: float
         The solution for $x>\alpha$.
 
-    Ref: 
+    References
+    ----------
     [1] J.M. Borwein and R. M. Corless, The Gamma function in the Monthly American Math Monthly.
     [2] Pedersen, Henrik (9 September 2013). ""Inverses of gamma functions"". Constructive Approximation. 7 (2): 251-267. arXiv:1309.2167. doi:10.1007/s00365-014-9239-1. S2CID 253898042.
     
