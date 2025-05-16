@@ -984,6 +984,16 @@ def genextreme_weibull(mu = None, sigma = None, xi = None, E = None, V = None, z
         zbc = zbc_from_xi(xi)
         return GenextremeWeibull(E=E, V=V, z_b=E + zbc*np.sqrt(V))
     
+    elif "E" in args and "mu" in args and "zb" in args:
+        psi = mu - zb
+        xi = 1 
+
+        # g1 = special.gamma(1-xi)
+        # g2 = special.gamma(1-2*xi)
+        # psi = (E-mu)/(g1-1)
+        V = psi**2 * (g2 - g1**2)
+        return GenextremeWeibull(E=E, V=V, z_b=zb)
+    
     else:
         raise NotImplementedError("This combination of arguments is not implemented yet")
 
