@@ -6,7 +6,7 @@ This will allow pytensor and numpy methods to be written for the distributions.
 """
 
 import numpy as np
-from aje.special import xi_from_zbc, zbc_from_xi
+from aje.special import xi_from_zbc, zbc_from_xi, gammainv
 from aje.special.xi_and_zbc import init_guess
 from aje.stats.utils import numerical_moment, numerical_standardised_moment, retake_block_max
 from scipy.stats import genextreme, uniform
@@ -986,11 +986,10 @@ def genextreme_weibull(mu = None, sigma = None, xi = None, E = None, V = None, z
     
     elif "E" in args and "mu" in args and "zb" in args:
         psi = mu - zb
-        xi = 1 
-
-        # g1 = special.gamma(1-xi)
-        # g2 = special.gamma(1-2*xi)
-        # psi = (E-mu)/(g1-1)
+        g1 = (E-zb)/psi
+        xi = 1 - gammainv( (E-zb)/psi )[1] #Larger than alpha solution.
+        g2 = special.gamma(1-2*xi)
+        psi = (E-mu)/(g1-1)
         V = psi**2 * (g2 - g1**2)
         return GenextremeWeibull(E=E, V=V, z_b=zb)
     
